@@ -1,0 +1,25 @@
+{
+  "name": "blog-api-mongoose",
+  "version": "1.0.0",
+  "description": "Blog API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuliaBlyndiuk/blog-api-mongoose.git"
+  },
+  "author": "Yulia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YuliaBlyndiuk/blog-api-mongoose/issues"
+  },
+  "homepage": "https://github.com/YuliaBlyndiuk/blog-api-mongoose#readme",
+  "dependencies": {
+    "express": "^4.15.3",
+    "mongoose": "^4.10.2",
+    "nodemon": "^1.11.0"
+  }
+}
