@@ -7,13 +7,24 @@ mongoose.Promise = global.Promise;
 const {PORT, DATABASE_URL} = require('./config');
 const {post} = require('./models');
 
-app.get('/blog-posts', (req, res) => {
+app.get('/posts', (req, res) => {
 	post
 	.find()
 	.exec()
 	.then(posts => {
 		res.json(posts.map(post => post.apiRepr()));
 	})
+	.catch(err => {
+		console.error(err);
+		res.status(500).json({message: 'Internal server error'});
+	});
+});
+
+app.get('/posts/:id', (req, res) => {
+	post
+	.findById(req.params.id)
+	.exec()
+	.then(post => res.json(post.apiRepr()))
 	.catch(err => {
 		console.error(err);
 		res.status(500).json({message: 'Internal server error'});
