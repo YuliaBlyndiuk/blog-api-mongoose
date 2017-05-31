@@ -8,17 +8,16 @@ const {PORT, DATABASE_URL} = require('./config');
 const {post} = require('./models');
 
 app.get('/blog-posts', (req, res) => {
-	
-	var result = post.find()
-		.then((result) => {
-			console.log(result)
-			res.json(result);
-		})
-		.catch((error) => {
-			console.log(error);
-			res.sendStatus(500)
-		})
-	
+	post
+	.find()
+	.exec()
+	.then(posts => {
+		res.json(posts.map(post => post.apiRepr()));
+	})
+	.catch(err => {
+		console.error(err);
+		res.status(500).json({message: 'Internal server error'});
+	});
 });
 
 
