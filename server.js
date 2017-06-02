@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 mongoose.Promise = global.Promise;
-
+var bodyParser = require('body-parser');
 
 const {PORT, DATABASE_URL} = require('./config');
 const {post} = require('./models');
@@ -31,6 +31,62 @@ app.get('/posts/:id', (req, res) => {
 	});
 });
 
+app.post('/posts', bodyParser.json(), (req, res) => {
+	const requiredFields = ['title', 'content', 'author'];
+	for (let i = 0; i < requiredFields.length; i++) {
+		const field = requiredFields[i];
+		if (!(field in req.body)) {
+			const message = 'Missing \'${field}\' in request body'
+			console.error(message);
+			return res.status(400).send(message);
+		}
+	}
+
+	post
+	.create({
+		title: req.body.title,
+      	content: req.body.content,
+      	author: req.body.author
+    })
+    .then(post => res.status(201).json(post.apiRepr()))
+    .catch(err => {
+    	console.error(err);
+    	res.status(500).json({message: 'Internal server error'});
+    });
+});
+
+app.put('/posts/:id', bodyParser.json(), (req, res) => {
+	if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+		res.status(400).json({error: 'request ID and request body id must match'});
+	}
+
+	const updated = {};
+	const fieldsToUpd = ['title', 'content', 'author'];
+	fieldsToUpd.forEach(field => {
+		if (field in req.body) {
+			updated[field] = req.body[field];
+		}
+	});
+
+	post
+	.findByIdAndUpdate(req.params.id, {$set: updated}, {new: true})
+	.exec()
+	.then(updatedPost => res.status(201).json(updatedPost.apiRepr()))
+	.catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+app.delete('/posts/:id', (req, res) => {
+	post
+	.findByIdAndRemove(req.params.id)
+	.exec()
+	.then(() => {	
+		res.sendStatus(204);
+	})
+	.catch(err => {
+		console.error(err);
+		res.status(500).json({errir: 'Internal server error'});
+	});
+});
 
 let server;
 
